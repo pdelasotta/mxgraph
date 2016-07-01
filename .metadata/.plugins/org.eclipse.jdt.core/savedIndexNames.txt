@@ -1,0 +1,24 @@
+INDEX VERSION 1.129+/Users/pdelasotta/git/github/mxgraph/.metadata/.plugins/org.eclipse.jdt.core
+1969767409.index
+3010740375.index
+4036230714.index
+2363563081.index
+1271342938.index
+1067258947.index
+3131291862.index
+3670248649.index
+2867016645.index
+3030040366.index
+4238018145.index
+2138245560.index
+1315525803.index
+861095968.index
+4061992246.index
+2265186267.index
+521061135.index
+3735975305.index
+1753319412.index
+404199878.index
+2634225966.index
+506999199.index
+3767115374.index

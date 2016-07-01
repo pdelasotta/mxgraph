@@ -1,0 +1,61 @@
+package cl.riescorp.drawioExporter;
+
+import java.awt.Color;
+import java.io.IOException;
+import java.io.StringReader;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.PdfWriter;
+import com.mxgraph.canvas.mxGraphicsCanvas2D;
+import com.mxgraph.canvas.mxICanvas2D;
+import com.mxgraph.reader.mxSaxOutputHandler;
+
+class DrawioExporter {
+	
+	private static transient SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+	protected static void writePdf(String url, String fname, int w, int h, Color bg, String xml)
+			throws DocumentException, IOException, SAXException, ParserConfigurationException
+	{
+//		response.setContentType("application/pdf");
+
+//		if (fname != null)
+//		{
+//			response.setHeader("Content-Disposition", "attachment; filename=\"" + fname + "\"; filename*=UTF-8''" + fname);
+//		}
+
+		// Fixes PDF offset
+		w += 1;
+		h += 1;
+
+		Document document = new Document(new Rectangle(w, h));
+		PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
+		document.open();
+
+		mxGraphicsCanvas2D gc = createCanvas(url, writer.getDirectContent().createGraphics(w, h));
+
+		// Fixes PDF offset
+		gc.translate(1, 1);
+
+		renderXml(xml, gc);
+		gc.getGraphics().dispose();
+		document.close();
+		writer.flush();
+		writer.close();
+	}
+	protected static void renderXml(String xml, mxICanvas2D canvas) throws SAXException, ParserConfigurationException, IOException
+	{
+		XMLReader reader = parserFactory.newSAXParser().getXMLReader();
+		reader.setContentHandler(new mxSaxOutputHandler(canvas));
+		reader.parse(new InputSource(new StringReader(xml)));
+	}
+}

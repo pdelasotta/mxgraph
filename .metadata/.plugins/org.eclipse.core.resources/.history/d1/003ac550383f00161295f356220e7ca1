@@ -44,7 +44,6 @@ class DrawioExporter {
 		Document document = new Document(new Rectangle(w, h));
 		
 		OutputStream outputStream = null;
-		//TODO: inicializar correctamente el outputstream.
 		PdfWriter writer = PdfWriter.getInstance(document, outputStream);
 		document.open();
 

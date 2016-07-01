@@ -7,8 +7,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Hashtable;
-import java.io.OutputStream;
-//import javax.servlet.http.HttpServletResponse;
+
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -25,7 +25,7 @@ import com.mxgraph.canvas.mxICanvas2D;
 import com.mxgraph.reader.mxSaxOutputHandler;
 
 class DrawioExporter {
-	protected static transient Hashtable<String, Image> imageCache = new Hashtable<String, Image>();
+	
 	private static transient SAXParserFactory parserFactory = SAXParserFactory.newInstance();
 	protected static void writePdf(String url, String fname, int w, int h, Color bg, String xml)
 			throws DocumentException, IOException, SAXException, ParserConfigurationException
@@ -42,13 +42,10 @@ class DrawioExporter {
 		h += 1;
 
 		Document document = new Document(new Rectangle(w, h));
-		
-		OutputStream outputStream = null;
-		//TODO: inicializar correctamente el outputstream.
-		PdfWriter writer = PdfWriter.getInstance(document, outputStream);
+		PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
 		document.open();
 
-		mxGraphicsCanvas2D gc = createCanvas(/*url,*/ writer.getDirectContent().createGraphics(w, h));
+		mxGraphicsCanvas2D gc = createCanvas(url, writer.getDirectContent().createGraphics(w, h));
 
 		// Fixes PDF offset
 		gc.translate(1, 1);
@@ -65,11 +62,11 @@ class DrawioExporter {
 		reader.setContentHandler(new mxSaxOutputHandler(canvas));
 		reader.parse(new InputSource(new StringReader(xml)));
 	}
-	protected static mxGraphicsCanvas2D createCanvas(/*String url,*/ Graphics2D g2)
+	protected static mxGraphicsCanvas2D createCanvas(String url, Graphics2D g2)
 	{
 		// Caches custom images for the time of the request
 		final Hashtable<String, Image> shortCache = new Hashtable<String, Image>();
-//		final String domain = url.substring(0, url.lastIndexOf("/"));
+		final String domain = url.substring(0, url.lastIndexOf("/"));
 
 		mxGraphicsCanvas2D g2c = new mxGraphicsCanvas2D(g2)
 		{
@@ -78,11 +75,11 @@ class DrawioExporter {
 				// Uses local image cache by default
 				Hashtable<String, Image> cache = shortCache;
 
-//				// Uses global image cache for local images
-//				if (src.startsWith(domain))
-//				{
-//					cache = imageCache;
-//				}
+				// Uses global image cache for local images
+				if (src.startsWith(domain))
+				{
+					cache = imageCache;
+				}
 
 				Image image = cache.get(src);
 
@@ -96,10 +93,10 @@ class DrawioExporter {
 					}
 					else
 					{
-						cache.put(src, EMPTY_IMAGE);
+						cache.put(src, Constants.EMPTY_IMAGE);
 					}
 				}
-				else if (image == EMPTY_IMAGE)
+				else if (image == Constants.EMPTY_IMAGE)
 				{
 					image = null;
 				}

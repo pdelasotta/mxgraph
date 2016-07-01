@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Hashtable;
-import java.io.OutputStream;
+
 //import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
@@ -42,10 +42,7 @@ class DrawioExporter {
 		h += 1;
 
 		Document document = new Document(new Rectangle(w, h));
-		
-		OutputStream outputStream = null;
-		//TODO: inicializar correctamente el outputstream.
-		PdfWriter writer = PdfWriter.getInstance(document, outputStream);
+		PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
 		document.open();
 
 		mxGraphicsCanvas2D gc = createCanvas(/*url,*/ writer.getDirectContent().createGraphics(w, h));
